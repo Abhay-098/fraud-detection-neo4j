@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fraud Graph Analytics</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="top">
+  <div>
+    <div class="eyebrow">BCSE406L · NEO4J PROTOTYPE</div>
+    <h1>Fraud Graph Analytics</h1>
+    <p>Relationship-aware financial fraud and potential fraud-ring investigation</p>
+  </div>
+  <div class="status"><span id="dot"></span><span id="health">Checking API…</span></div>
+</header>
+
+<main>
+<section class="cards">
+  <div class="card"><span>Customers</span><strong id="customers">—</strong></div>
+  <div class="card"><span>Accounts</span><strong id="accounts">—</strong></div>
+  <div class="card"><span>Transactions</span><strong id="transactions">—</strong></div>
+  <div class="card"><span>Known fraud</span><strong id="fraud">—</strong></div>
+  <div class="card"><span>Devices</span><strong id="devices">—</strong></div>
+</section>
+
+<section class="grid2">
+  <article class="panel">
+    <div class="panel-head"><h2>Investigation workflow</h2><span>Neo4j + FastAPI</span></div>
+    <div class="flow">
+      <div>Transaction data</div><i>→</i><div>Graph model</div><i>→</i><div>Risk patterns</div><i>→</i><div>Investigation</div>
+    </div>
+    <div class="notice">Graph patterns are risk indicators, not automatic proof of fraud.</div>
+  </article>
+  <article class="panel">
+    <div class="panel-head"><h2>Risk indicators</h2><span>Live query</span></div>
+    <div id="riskTable" class="table"></div>
+  </article>
+</section>
+
+<section class="grid2">
+  <article class="panel">
+    <div class="panel-head"><h2>Potential shared-device clusters</h2><span>Graph traversal</span></div>
+    <div id="devicesTable" class="table"></div>
+  </article>
+  <article class="panel">
+    <div class="panel-head"><h2>Potential rings / repeated flows</h2><span>Relationship evidence</span></div>
+    <div id="ringsTable" class="table"></div>
+  </article>
+</section>
+
+<section class="panel">
+  <div class="panel-head"><h2>Recent transactions</h2><a href="/docs">Open API docs ↗</a></div>
+  <div id="txTable" class="table wide"></div>
+</section>
+</main>
+<script src="/script.js"></script>
+</body>
+</html>

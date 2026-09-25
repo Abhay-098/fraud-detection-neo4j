@@ -1,0 +1,14 @@
+Review 2 upgraded release
+===========================
+Project: Graph-Based Financial Fraud Detection and Fraud-Ring Detection Using Neo4j
+Dataset workflow: PaySim + reproducible download/preprocessing
+Included demo dataset: 25,000-row synthetic fallback for immediate testing
+Included plots: 12 PNG figures
+Included graph visuals: architecture.svg, graph-schema.svg, fraud-ring.svg
+Included backend: FastAPI + Neo4j Python driver
+Included CRUD: transaction create/read/update/delete
+Included evaluation: accuracy, precision, recall, F1, ROC-AUC, PR-AUC, confusion matrix
+Included graph analysis: shared devices, cycles, repeated flows, high-risk accounts
+Included optional GDS: PageRank and Louvain queries
+Important: the raw PaySim CSV is not bundled because the public file is about 494 MB.
+Download/source: https://www.kaggle.com/datasets/ealaxi/paysim1
