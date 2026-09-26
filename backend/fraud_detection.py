@@ -1,4 +1,5 @@
 from .database import session
+from .ml_detection import predict_fraud
 
 
 def _clamp(value, low=0, high=100):
@@ -372,13 +373,13 @@ def analyze_transaction(origin, destination, amount, tx_type="TRANSFER"):
     WITH o,d,origin_tx_count,origin_max_amount,origin_avg_amount,observed_balance,
          count(DISTINCT peer) AS shared_device_peers,
          collect(DISTINCT dev.device_id)[0..10] AS shared_devices
-    OPTIONAL MATCH (d)-[:PERFORMS]->(:Transaction)-[:SENT_TO]->(o)
+    OPTIONAL MATCH (d)-[:PERFORMS]->(rt:Transaction)-[:SENT_TO]->(o)
     WITH o,d,origin_tx_count,origin_max_amount,origin_avg_amount,observed_balance,
-         shared_device_peers,shared_devices,count(*) AS return_flows
+        shared_device_peers,shared_devices,count(rt) AS return_flows
     RETURN o IS NOT NULL AS origin_found,
-           d IS NOT NULL AS destination_found,
-           origin_tx_count, origin_max_amount, origin_avg_amount, observed_balance,
-           shared_device_peers, shared_devices, return_flows
+        d IS NOT NULL AS destination_found,
+        origin_tx_count, origin_max_amount, origin_avg_amount, observed_balance,
+        shared_device_peers, shared_devices, return_flows
     """
     with session() as s:
         rec = dict(s.run(q, origin=origin, destination=destination).single())
@@ -412,11 +413,10 @@ def analyze_transaction(origin, destination, amount, tx_type="TRANSFER"):
     if observed_balance > 0 and amount / observed_balance >= 0.9:
         score += 20; indicators.append("possible_balance_draining")
 
+    # Device relationships in the Aura demo are synthetic.
+    # Keep them as graph evidence, but do not use them in the
+    # PaySim transaction fraud-risk score.
     peers = int(rec.get("shared_device_peers") or 0)
-    if peers >= 10:
-        score += 20; indicators.append("device_shared_with_many_accounts")
-    elif peers >= 3:
-        score += 12; indicators.append("device_shared_with_multiple_accounts")
 
     tx_count = int(rec.get("origin_tx_count") or 0)
     if tx_count >= 20:
@@ -449,19 +449,69 @@ def analyze_transaction(origin, destination, amount, tx_type="TRANSFER"):
 def analyze_stored_transaction(transaction_id):
     q = """
     MATCH (o:Account)-[:PERFORMS]->(t:Transaction {transaction_id:$transaction_id})-[:SENT_TO]->(d:Account)
-    RETURN o.account_id AS origin, d.account_id AS destination,
-           t.amount AS amount, t.type AS type,
-           coalesce(t.is_fraud,false) AS known_label
+    RETURN
+        o.account_id AS origin,
+        d.account_id AS destination,
+        t.step AS step,
+        t.amount AS amount,
+        t.type AS type,
+        t.oldbalanceOrg AS oldbalanceOrg,
+        t.newbalanceOrig AS newbalanceOrig,
+        t.oldbalanceDest AS oldbalanceDest,
+        t.newbalanceDest AS newbalanceDest,
+        coalesce(t.is_fraud, false) AS known_label
     """
+
     with session() as s:
-        rec = s.run(q, transaction_id=transaction_id).single()
+        rec = s.run(
+            q,
+            transaction_id=transaction_id
+        ).single()
+
     if not rec:
         return None
+
     rec = dict(rec)
-    result = analyze_transaction(rec["origin"], rec["destination"], rec.get("amount") or 0, rec.get("type") or "TRANSFER")
-    result["transaction_id"] = transaction_id
-    result["ground_truth"] = {"is_fraud": bool(rec.get("known_label")), "used_in_score": False}
-    return result
+
+    # Existing Neo4j graph/rule analysis
+    graph_result = analyze_transaction(
+        rec["origin"],
+        rec["destination"],
+        rec.get("amount") or 0,
+        rec.get("type") or "TRANSFER",
+    )
+
+    # Machine-learning prediction
+    ml_result = predict_fraud({
+        "step": rec.get("step") or 0,
+        "type": rec.get("type") or "TRANSFER",
+        "amount": rec.get("amount") or 0,
+        "oldbalanceOrg": rec.get("oldbalanceOrg") or 0,
+        "newbalanceOrig": rec.get("newbalanceOrig") or 0,
+        "oldbalanceDest": rec.get("oldbalanceDest") or 0,
+        "newbalanceDest": rec.get("newbalanceDest") or 0,
+    })
+
+    return {
+        "transaction_id": transaction_id,
+
+        "transaction": {
+            "origin": rec["origin"],
+            "destination": rec["destination"],
+            "step": rec.get("step"),
+            "type": rec.get("type"),
+            "amount": rec.get("amount"),
+        },
+
+        "ml_analysis": ml_result,
+
+        "graph_analysis": graph_result,
+
+        "ground_truth": {
+            "is_fraud": bool(rec.get("known_label")),
+            "used_in_prediction": False,
+        },
+    }
 
 
 def summary():

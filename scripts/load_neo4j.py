@@ -28,8 +28,15 @@ def make_row(r):
     origin=str(r.nameOrig); dest=str(r.nameDest)
     return {
         "transaction_id":str(r.transaction_id),"step":int(r.step),"type":str(r.type),
-        "amount":float(r.amount),"origin":origin,"destination":dest,
-        "is_fraud":bool(r.is_fraud),
+        "amount": float(r.amount),
+        "origin": origin,
+        "destination": dest,
+        "is_fraud": bool(r.is_fraud),
+
+        "oldbalanceOrg": float(r.oldbalanceOrg),
+        "newbalanceOrig": float(r.newbalanceOrig),
+        "oldbalanceDest": float(r.oldbalanceDest),
+        "newbalanceDest": float(r.newbalanceDest),
         "device":"D"+f"{stable_num(origin,5000)+1:05d}",
         "location":"L"+f"{stable_num(str(origin)+str(int(r.step)),500)+1:04d}"
     }
@@ -45,9 +52,17 @@ def batch_tx(tx, rows):
     MERGE (oa)-[:ACCESSED_FROM]->(od)
     MERGE (ol:Location {location_id:row.location})
     CREATE (t:Transaction {
-      transaction_id:row.transaction_id, step:row.step, type:row.type,
-      amount:row.amount, origin:row.origin, destination:row.destination,
-      is_fraud:row.is_fraud
+        transaction_id:row.transaction_id,
+        step:row.step,
+        type:row.type,
+        amount:row.amount,
+        origin:row.origin,
+        destination:row.destination,
+        oldbalanceOrg:row.oldbalanceOrg,
+        newbalanceOrig:row.newbalanceOrig,
+        oldbalanceDest:row.oldbalanceDest,
+        newbalanceDest:row.newbalanceDest,
+        is_fraud:row.is_fraud
     })
     CREATE (oa)-[:PERFORMS]->(t)
     FOREACH (_ IN CASE WHEN row.destination STARTS WITH 'M' THEN [1] ELSE [] END |

@@ -1,73 +1,352 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Fraud Graph Analytics</title>
-<link rel="stylesheet" href="/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Fraud Graph Analytics</title>
+
+  <link rel="stylesheet" href="/style.css">
 </head>
+
 <body>
+
 <header class="top">
+
   <div>
     <div class="eyebrow">BCSE406L · NEO4J PROTOTYPE</div>
+
     <h1>Fraud Graph Analytics</h1>
-    <p>Relationship-aware financial fraud and potential fraud-ring investigation</p>
+
+    <p>
+      Machine-learning fraud detection and relationship-aware
+      financial fraud-ring investigation
+    </p>
   </div>
-  <div class="status"><span id="dot"></span><span id="health">Checking API…</span></div>
+
+  <div class="status">
+    <span id="dot"></span>
+    <span id="health">Checking API...</span>
+  </div>
+
 </header>
 
+
 <main>
-<section class="cards">
-  <div class="card"><span>Customers</span><strong id="customers">—</strong></div>
-  <div class="card"><span>Accounts</span><strong id="accounts">—</strong></div>
-  <div class="card"><span>Transactions</span><strong id="transactions">—</strong></div>
-  <div class="card"><span>Known fraud</span><strong id="fraud">—</strong></div>
-  <div class="card"><span>Devices</span><strong id="devices">—</strong></div>
-</section>
 
+  <!-- ========================================================= -->
+  <!-- DATABASE SUMMARY -->
+  <!-- ========================================================= -->
 
-<section class="panel">
-  <div class="panel-head"><h2>Analyze a transaction</h2><span>Explainable graph risk engine</span></div>
-  <form id="analysisForm" class="analysis-form">
-    <label>Origin account<input id="anOrigin" required placeholder="e.g. C123..."></label>
-    <label>Destination account<input id="anDestination" required placeholder="e.g. C456..."></label>
-    <label>Amount<input id="anAmount" type="number" min="0.01" step="0.01" required value="100000"></label>
-    <label>Type<select id="anType"><option>TRANSFER</option><option>CASH_OUT</option><option>PAYMENT</option><option>DEBIT</option><option>CASH_IN</option></select></label>
-    <button type="submit">Analyze fraud risk</button>
-  </form>
-  <div id="analysisResult" class="resultbox"><span class="muted">Enter two account IDs and an amount. The score uses graph/transaction indicators, not the PaySim fraud label.</span></div>
-</section>
+  <section class="cards">
 
-<section class="grid2">
-  <article class="panel">
-    <div class="panel-head"><h2>Investigation workflow</h2><span>Neo4j + FastAPI</span></div>
-    <div class="flow">
-      <div>Transaction data</div><i>→</i><div>Graph model</div><i>→</i><div>Risk patterns</div><i>→</i><div>Investigation</div>
+    <div class="card">
+      <span>Customers</span>
+      <strong id="customers">—</strong>
     </div>
-    <div class="notice">Graph patterns are risk indicators, not automatic proof of fraud.</div>
-  </article>
-  <article class="panel">
-    <div class="panel-head"><h2>Risk indicators</h2><span>Live query</span></div>
-    <div id="riskTable" class="table"></div>
-  </article>
-</section>
 
-<section class="grid2">
-  <article class="panel">
-    <div class="panel-head"><h2>Potential shared-device clusters</h2><span>Graph traversal</span></div>
-    <div id="devicesTable" class="table"></div>
-  </article>
-  <article class="panel">
-    <div class="panel-head"><h2>Potential rings / repeated flows</h2><span>Relationship evidence</span></div>
-    <div id="ringsTable"></div>
-  </article>
-</section>
+    <div class="card">
+      <span>Accounts</span>
+      <strong id="accounts">—</strong>
+    </div>
 
-<section class="panel">
-  <div class="panel-head"><h2>Recent transactions</h2><a href="/docs">Open API docs ↗</a></div>
-  <div id="txTable" class="table wide"></div>
-</section>
+    <div class="card">
+      <span>Transactions</span>
+      <strong id="transactions">—</strong>
+    </div>
+
+    <div class="card">
+      <span>Known fraud</span>
+      <strong id="fraud">—</strong>
+    </div>
+
+    <div class="card">
+      <span>Devices</span>
+      <strong id="devices">—</strong>
+    </div>
+
+  </section>
+
+
+  <!-- ========================================================= -->
+  <!-- STORED TRANSACTION ML + GRAPH ANALYSIS -->
+  <!-- ========================================================= -->
+
+  <section class="panel">
+
+    <div class="panel-head">
+      <h2>Dataset Transaction Detection</h2>
+      <span>Machine Learning + Neo4j Graph Analysis</span>
+    </div>
+
+    <p class="muted">
+      Analyze a transaction already stored in Neo4j using the trained
+      Logistic Regression fraud model together with graph-based risk indicators.
+    </p>
+
+    <form id="storedAnalysisForm" class="analysis-form">
+
+      <label>
+        Transaction ID
+
+        <input
+          id="storedTransactionId"
+          required
+          placeholder="e.g. TX000035944"
+          value="TX000035944"
+        >
+      </label>
+
+      <button type="submit">
+        Analyze stored transaction
+      </button>
+
+    </form>
+
+
+    <div id="storedAnalysisResult" class="resultbox">
+
+      <span class="muted">
+        Example fraud transaction: TX000035944.
+        Example legitimate transaction: TX000000001.
+      </span>
+
+    </div>
+
+  </section>
+
+
+  <!-- ========================================================= -->
+  <!-- NEW / HYPOTHETICAL TRANSACTION GRAPH SCREENING -->
+  <!-- ========================================================= -->
+
+  <section class="panel">
+
+    <div class="panel-head">
+
+      <h2>Screen a New Transaction</h2>
+
+      <span>
+        Explainable graph-risk screening
+      </span>
+
+    </div>
+
+    <p class="muted">
+      This form screens a new or hypothetical transaction using graph
+      and transaction-risk indicators. It does not use the PaySim
+      ground-truth fraud label.
+    </p>
+
+
+    <form id="analysisForm" class="analysis-form">
+
+      <label>
+        Origin account
+
+        <input
+          id="anOrigin"
+          required
+          placeholder="e.g. C123..."
+        >
+      </label>
+
+
+      <label>
+        Destination account
+
+        <input
+          id="anDestination"
+          required
+          placeholder="e.g. C456..."
+        >
+      </label>
+
+
+      <label>
+        Amount
+
+        <input
+          id="anAmount"
+          type="number"
+          min="0.01"
+          step="0.01"
+          required
+          value="100000"
+        >
+      </label>
+
+
+      <label>
+        Type
+
+        <select id="anType">
+
+          <option>TRANSFER</option>
+          <option>CASH_OUT</option>
+          <option>PAYMENT</option>
+          <option>DEBIT</option>
+          <option>CASH_IN</option>
+
+        </select>
+
+      </label>
+
+
+      <button type="submit">
+        Analyze graph risk
+      </button>
+
+    </form>
+
+
+    <div id="analysisResult" class="resultbox">
+
+      <span class="muted">
+        Enter two account IDs and an amount.
+        This score uses graph and transaction indicators.
+      </span>
+
+    </div>
+
+  </section>
+
+
+  <!-- ========================================================= -->
+  <!-- INVESTIGATION + HIGH RISK ACCOUNTS -->
+  <!-- ========================================================= -->
+
+  <section class="grid2">
+
+
+    <article class="panel">
+
+      <div class="panel-head">
+
+        <h2>Investigation Workflow</h2>
+
+        <span>ML + Neo4j + FastAPI</span>
+
+      </div>
+
+
+      <div class="flow">
+
+        <div>Transaction</div>
+
+        <i>→</i>
+
+        <div>ML Detection</div>
+
+        <i>→</i>
+
+        <div>Graph Analysis</div>
+
+        <i>→</i>
+
+        <div>Investigation</div>
+
+      </div>
+
+
+      <div class="notice">
+
+        Machine learning predicts transaction-level fraud.
+        Neo4j provides relationship-aware risk evidence and
+        fraud-ring investigation.
+
+      </div>
+
+    </article>
+
+
+    <article class="panel">
+
+      <div class="panel-head">
+
+        <h2>Risk Indicators</h2>
+
+        <span>Live Neo4j query</span>
+
+      </div>
+
+      <div id="riskTable" class="table"></div>
+
+    </article>
+
+
+  </section>
+
+
+  <!-- ========================================================= -->
+  <!-- GRAPH CLUSTERS AND FRAUD RINGS -->
+  <!-- ========================================================= -->
+
+  <section class="grid2">
+
+
+    <article class="panel">
+
+      <div class="panel-head">
+
+        <h2>Potential Shared-Device Clusters</h2>
+
+        <span>Graph traversal</span>
+
+      </div>
+
+      <div id="devicesTable" class="table"></div>
+
+    </article>
+
+
+    <article class="panel">
+
+      <div class="panel-head">
+
+        <h2>Potential Fraud Rings</h2>
+
+        <span>Relationship evidence</span>
+
+      </div>
+
+      <div id="ringsTable"></div>
+
+    </article>
+
+
+  </section>
+
+
+  <!-- ========================================================= -->
+  <!-- RECENT TRANSACTIONS -->
+  <!-- ========================================================= -->
+
+  <section class="panel">
+
+    <div class="panel-head">
+
+      <h2>Recent Transactions</h2>
+
+      <a href="/docs" target="_blank">
+        Open API docs ↗
+      </a>
+
+    </div>
+
+    <div
+      id="txTable"
+      class="table wide">
+    </div>
+
+  </section>
+
+
 </main>
+
+
 <script src="/script.js"></script>
+
 </body>
 </html>

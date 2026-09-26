@@ -1,3 +1,4 @@
+import joblib
 import argparse
 import json
 from pathlib import Path
@@ -93,6 +94,7 @@ def main(inp):
     ]
 
     experiments = []
+    trained_models = []
 
     for weight in class_weights:
 
@@ -119,12 +121,26 @@ def main(inp):
         )
 
         metrics["class_weight"] = weight
-        experiments.append(metrics)
 
-    best = max(
-        experiments,
-        key=lambda x: x["f1"]
+        experiments.append(metrics)
+        trained_models.append(model)
+
+    best_index = max(
+        range(len(experiments)),
+        key=lambda i: experiments[i]["f1"]
     )
+
+    best = experiments[best_index]
+    best_model = trained_models[best_index]
+
+    Path("models").mkdir(exist_ok=True)
+
+    joblib.dump(
+        best_model,
+        "models/fraud_model.joblib"
+    )
+
+    print("\nSaved best model to models/fraud_model.joblib")
 
     output = {
         "dataset": inp,
