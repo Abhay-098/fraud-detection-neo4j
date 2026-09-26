@@ -226,3 +226,14 @@ Lopez-Rojas, E. A., Elmir, A., & Axelsson, S. (2016). PaySim: A financial mobile
 
 Dataset source:
 https://www.kaggle.com/datasets/ealaxi/paysim1
+
+## Final-review fraud detection upgrade
+
+The v3 API adds explainable transaction-risk analysis and candidate fraud-ring detection. The risk score intentionally does **not** use PaySim's `is_fraud` label; that label remains ground truth for evaluation.
+
+- `POST /api/fraud/analyze` — analyze a hypothetical/new transaction using amount, account history, shared-device exposure, transaction activity/type, and reverse-flow graph evidence.
+- `GET /api/fraud/analyze/{transaction_id}` — analyze an existing graph transaction and return its PaySim label separately as ground truth.
+- `GET /api/fraud/rings` — candidate coordinated groups based on shared-device membership plus internal money flows.
+- `GET /api/fraud/cycles` — explicit three-account circular money-flow patterns.
+
+Risk scores are investigation indicators, not proof of fraud. High-risk results should be reviewed by an investigator.

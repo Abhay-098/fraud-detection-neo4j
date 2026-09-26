@@ -25,6 +25,19 @@
   <div class="card"><span>Devices</span><strong id="devices">—</strong></div>
 </section>
 
+
+<section class="panel">
+  <div class="panel-head"><h2>Analyze a transaction</h2><span>Explainable graph risk engine</span></div>
+  <form id="analysisForm" class="analysis-form">
+    <label>Origin account<input id="anOrigin" required placeholder="e.g. C123..."></label>
+    <label>Destination account<input id="anDestination" required placeholder="e.g. C456..."></label>
+    <label>Amount<input id="anAmount" type="number" min="0.01" step="0.01" required value="100000"></label>
+    <label>Type<select id="anType"><option>TRANSFER</option><option>CASH_OUT</option><option>PAYMENT</option><option>DEBIT</option><option>CASH_IN</option></select></label>
+    <button type="submit">Analyze fraud risk</button>
+  </form>
+  <div id="analysisResult" class="resultbox"><span class="muted">Enter two account IDs and an amount. The score uses graph/transaction indicators, not the PaySim fraud label.</span></div>
+</section>
+
 <section class="grid2">
   <article class="panel">
     <div class="panel-head"><h2>Investigation workflow</h2><span>Neo4j + FastAPI</span></div>
@@ -46,7 +59,7 @@
   </article>
   <article class="panel">
     <div class="panel-head"><h2>Potential rings / repeated flows</h2><span>Relationship evidence</span></div>
-    <div id="ringsTable" class="table"></div>
+    <div id="ringsTable"></div>
   </article>
 </section>
 

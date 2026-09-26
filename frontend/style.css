@@ -7,3 +7,12 @@ main{padding:28px 5vw 50px}.cards{display:grid;grid-template-columns:repeat(5,1f
 .flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:center;gap:8px}.flow div{padding:15px 8px;text-align:center;border:1px solid var(--line);border-radius:12px;background:var(--panel2);font-size:12px}.flow i{color:var(--accent);font-style:normal}.notice{margin-top:15px;padding:12px;border-radius:10px;background:#0a2032;color:#9fc8ed;font-size:12px}
 .table{display:grid;gap:8px}.row{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:12px}.row.head{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.7px}.wide .row{grid-template-columns:1.1fr .7fr 1fr 1fr .8fr 1fr}.pill{padding:3px 8px;border-radius:999px;background:#102a42;color:#9fc8ed;width:max-content}.risk{color:#fbbf24}.good{color:var(--good)}
 @media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.flow i{display:none}.wide{overflow:auto}}
+
+/* Final-review fraud analysis */
+.analysis-form{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:10px;align-items:end;margin:12px 0 18px}
+.analysis-form label{font-size:12px;color:#94a3b8;display:flex;flex-direction:column;gap:6px}
+.analysis-form input,.analysis-form select{background:#0b1220;border:1px solid #334155;color:#e2e8f0;border-radius:8px;padding:10px}
+.analysis-form button{border:0;border-radius:8px;padding:11px 16px;font-weight:700;cursor:pointer;background:#e2e8f0;color:#0f172a}
+.resultbox{border:1px solid #334155;border-radius:10px;padding:14px;background:#0b1220;min-height:72px}
+.scoreline{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.score{font-size:30px;font-weight:800}.pill{padding:5px 10px;border:1px solid #475569;border-radius:999px;font-weight:700}.indicators{margin:10px 0 0;padding-left:20px;color:#cbd5e1}.muted{color:#94a3b8;font-size:13px}.ring-card{border-bottom:1px solid #263244;padding:10px 0}.ring-card:last-child{border-bottom:0}.ring-title{display:flex;justify-content:space-between;gap:10px;font-weight:700}.ring-members{font-size:12px;color:#94a3b8;word-break:break-word;margin-top:5px}
+@media(max-width:900px){.analysis-form{grid-template-columns:1fr 1fr}.analysis-form button{grid-column:1/-1}}
