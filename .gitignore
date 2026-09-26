@@ -11,3 +11,4 @@ models/*.joblib
 screenshots/*.png
 .ipynb_checkpoints/
 
+data/aura_demo/
